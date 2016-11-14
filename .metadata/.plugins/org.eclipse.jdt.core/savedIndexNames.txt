@@ -1,3 +1,0 @@
-INDEX VERSION 1.126+D:\Github\OnlineDictionary\.metadata\.plugins\org.eclipse.jdt.core
-1174246192.index
-3637789331.index
