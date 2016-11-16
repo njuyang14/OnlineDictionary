@@ -1,5 +1,3 @@
-package dicServer;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -7,7 +5,20 @@ import java.util.*;
 public class Server {
 
 	public static void main(String[] args) {
+ /*       InetAddress ia=null;
+        try {
+            ia=InetAddress.getLocalHost();
+             
+            String localname=ia.getHostName();
+            String localip=ia.getHostAddress();
+            System.out.println("本机名称是："+ localname);
+            System.out.println("本机的ip是 ："+localip);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
 		new Server();
+
 	}
 
 	public Server()
@@ -15,13 +26,13 @@ public class Server {
 		try
 		{
 			ServerSocket serverSocket = new ServerSocket(8000);
-			int clientNo = 1;
+//			int clientNo = 1;
 			while(true)
 			{
 				Socket socket = serverSocket.accept();
 				HandleAClient task = new HandleAClient(socket);
 				new Thread(task).start();
-				clientNo++;
+//				clientNo++;
 			}
 		}
 		catch (IOException e)
@@ -50,13 +61,26 @@ public class Server {
 				while(true)
 				{
 					//handle data
-					double radius = inputFromClient.readDouble();
+					int type = inputFromClient.readInt();
+					switch(type)
+					{
+						case 0://查询单词释义
+							{
+								String word = inputFromClient.readUTF();
+								String []explain = SearchOnline.search(word);
+								outputToClient.writeBytes(explain[0]);//baidu
+								outputToClient.writeBytes(explain[1]);//youdao
+								outputToClient.writeBytes(explain[2]);//bing
+								break;
+							}
+							case 1:break;
+							case 2:break;
+							case 3:break;
+					}
 					
-					double area = radius * radius * Math.PI;
-					
-					outputToClient.writeDouble(area);
-					
-					System.out.print("send.");
+//					double radius = inputFromClient.readDouble();
+//					double area = radius * radius * Math.PI;
+//					outputToClient.writeDouble(area);
 				}
 			}
 			catch(IOException e)
@@ -66,4 +90,3 @@ public class Server {
 		}
 	}
 }
-
