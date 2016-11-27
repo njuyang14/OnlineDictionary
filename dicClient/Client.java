@@ -11,6 +11,7 @@ import java.awt.event.*;
 public class Client extends JFrame{
 	private DataOutputStream toServer;
 	private DataInputStream fromServer;
+	private User user = new User();//
 	
 	private JPanel pInput = new JPanel();//最上方面板
 	//private JButton login = new JButton("login");
@@ -53,8 +54,9 @@ public class Client extends JFrame{
 	
 	private Border lineBorder = new LineBorder(Color.GRAY, 1);//全局边界线
 	/*Client构造函数*/
-	public Client(){
-		
+	public Client(User u){
+		user = u;
+		System.out.println(user.getName()+":"+user.getpswd());
 		String[] friendOnline = { "black", "blue", "green", "yellow", "white", "black", "blue", "green", "yellow", "white" };
 		
 		setLayout(new BorderLayout());//Frame Layout

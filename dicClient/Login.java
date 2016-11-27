@@ -12,6 +12,7 @@ import javax.swing.JTextArea;
 
 
 public class Login extends JFrame{
+	private User user = new User();
 	private JLabel l1 = new JLabel("用户名");
 	private JLabel l2 = new JLabel("   密码 ");
 	private JPanel p1 = new JPanel();
@@ -52,8 +53,15 @@ public class Login extends JFrame{
 		y.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
+				String name = area1.getText();
+				String pswd = area2.getText();
+				if(true){
+					user.setName(name);
+					user.setName(pswd);
+					user.setLogInfo(true);
+					JFrame frame = new Client(user);
+				}	
 				Login.this.dispose();//隐藏登陆界面
-				JFrame frame = new Client();
 			}
 			
 		});
