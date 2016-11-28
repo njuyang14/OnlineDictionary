@@ -57,7 +57,7 @@ public class Login extends JFrame{
 				String pswd = area2.getText();
 				if(true){
 					user.setName(name);
-					user.setName(pswd);
+					user.setpswd(pswd);
 					user.setLogInfo(true);
 					JFrame frame = new Client(user);
 				}	

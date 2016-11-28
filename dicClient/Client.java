@@ -9,8 +9,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Client extends JFrame{
-	private DataOutputStream toServer;
-	private DataInputStream fromServer;
+	private Socket socket; 
+	//private DataOutputStream toServer;
+	//private DataInputStream fromServer;
+	private ObjectOutputStream os;
+    private ObjectInputStream is;  
 	private User user = new User();//
 	
 	private JPanel pInput = new JPanel();//最上方面板
@@ -31,9 +34,9 @@ public class Client extends JFrame{
 	private JPanel south = new JPanel();//下方面板
 	
 	private JPanel meaning3 = new JPanel();//显示三方平台单词解释
-	private JTextArea text0 = new JTextArea(5,25);
-	private JTextArea text1 = new JTextArea(5,25);
-	private JTextArea text2 = new JTextArea(5,25);
+	private JTextArea text0 = new JTextArea(5,34);
+	private JTextArea text1 = new JTextArea(5,34);
+	private JTextArea text2 = new JTextArea(5,34);
 	
 	private JPanel meanAndCheck = new JPanel();//选择平台和词意显示
 	
@@ -59,7 +62,7 @@ public class Client extends JFrame{
 		System.out.println(user.getName()+":"+user.getpswd());
 		String[] friendOnline = { "black", "blue", "green", "yellow", "white", "black", "blue", "green", "yellow", "white" };
 		
-		setLayout(new BorderLayout());//Frame Layout
+		setLayout(new BorderLayout());//Frame Layout 
 		/*设置最上方输入以及用户登陆界面*/
 		add(pInput,BorderLayout.NORTH);
 		pInput.setLayout(new FlowLayout());
@@ -71,6 +74,7 @@ public class Client extends JFrame{
 		pInput.add(changeMode);
 		logout.setFont(new Font("Serif", 0, 23));
 		pInput.add(logout);
+		search.addActionListener(new SearchListener());
 		
 		/*下方面板*/
 		add(south,BorderLayout.CENTER);
@@ -94,7 +98,9 @@ public class Client extends JFrame{
 		text0.setFont(new Font("Serif", 0, 25));
 		text1.setFont(new Font("Serif", 0, 25));
 		text2.setFont(new Font("Serif", 0, 25));
-		text0.setText("baidu");
+		text0.setLineWrap(true);
+		text1.setLineWrap(true);//自动换行
+		text2.setLineWrap(true);
 		meaning3.add(web);
 		meaning3.add(text0);
 		meaning3.add(text1);
@@ -131,20 +137,46 @@ public class Client extends JFrame{
 		/*建立socket接口*/
 		try
 		{
-			Socket socket = new Socket("localhost", 8000);
-			fromServer = new DataInputStream(socket.getInputStream());
-			toServer = new DataOutputStream(socket.getOutputStream());
+			socket = new Socket("10.0.1.7", 8000);
+			is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+			os = new ObjectOutputStream(socket.getOutputStream());
 		}
 		catch(IOException ex)
 		{
-			//jta.append(ex.toString() + "\n");
+			text0.append(ex.toString() + "\n");
 		}
 	}
 	
 	class SearchListener implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
-			//this.
+			try
+			{
+				/*socket = new Socket("10.0.1.7", 8000);
+				os = new ObjectOutputStream(socket.getOutputStream());
+				is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));*/
+				
+				TranslateInfo t = new TranslateInfo();
+				t.setType(0);
+				t.setWord(in.getText());
+				
+				os.writeObject(t);
+				os.flush();
+				
+				t = (TranslateInfo)is.readObject();
+				text0.setText(t.getMean0());
+				text1.setText(t.getMean1());
+				text2.setText(t.getMean2());
+				socket.close();
+			}
+			catch(IOException ex)
+			{
+				text1.append(ex.toString() + "\n");
+			} 
+			catch (ClassNotFoundException e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
 		}
 	}
 }

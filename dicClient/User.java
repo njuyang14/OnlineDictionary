@@ -16,7 +16,7 @@ public class User {
 	public void setLogInfo(boolean info){logInfo = info;}
 	public void setSearchMode(int mode){searchMode = mode;}
 	public void setName(String name){userName = name;}
-	public void setpswd(String pwsd){password = pwsd;}
+	public void setpswd(String pswd){password = pswd;}
 	public void setFriendList(String[] str){
 		friendOnlineCurrent = str;
 	}

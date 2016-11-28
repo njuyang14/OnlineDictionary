@@ -63,7 +63,7 @@ public class Register extends JFrame{
 			
 		});
 		
-		this.setTitle("Login");
+		this.setTitle("Register");
 		this.setSize(400, 300);
 		//this.setResizable(false);
 		this.setLocationRelativeTo(null);
