@@ -10,8 +10,6 @@ import java.awt.event.*;
 
 public class Client extends JFrame{
 	private Socket socket; 
-	//private DataOutputStream toServer;
-	//private DataInputStream fromServer;
 	private ObjectOutputStream os;
     private ObjectInputStream is;  
 	private User user = new User();//
@@ -29,14 +27,28 @@ public class Client extends JFrame{
 	private JPanel web = new JPanel();//选择查词网站
 	private JCheckBox baidu = new JCheckBox("百度");
 	private JCheckBox youdao = new JCheckBox("有道");
-	private JCheckBox gold = new JCheckBox("金山");
+	private JCheckBox gold = new JCheckBox("必应");
 	
 	private JPanel south = new JPanel();//下方面板
 	
 	private JPanel meaning3 = new JPanel();//显示三方平台单词解释
-	private JTextArea text0 = new JTextArea(5,34);
-	private JTextArea text1 = new JTextArea(5,34);
-	private JTextArea text2 = new JTextArea(5,34);
+	/*翻译图标*/
+	private ImageIcon iconBaidu = new ImageIcon("./src/百度.png");
+	private ImageIcon iconYoudao = new ImageIcon("./src/有道.png");
+	private ImageIcon iconBing = new ImageIcon("./src/必应.png");
+	private JLabel labelBaidu = new JLabel(iconBaidu);
+	private JLabel labelYoudao = new JLabel(iconYoudao);
+	private JLabel labelBing = new JLabel(iconBing);
+	/*点赞按钮*/
+	private JButton good0 = new JButton("赞");
+	private JButton good1 = new JButton("赞");
+	private JButton good2 = new JButton("赞");
+	private JPanel m0 = new JPanel();
+	private JPanel m1 = new JPanel();
+	private JPanel m2 = new JPanel();
+	private JTextArea text0 = new JTextArea(5,33);
+	private JTextArea text1 = new JTextArea(5,33);
+	private JTextArea text2 = new JTextArea(5,33);
 	
 	private JPanel meanAndCheck = new JPanel();//选择平台和词意显示
 	
@@ -57,8 +69,10 @@ public class Client extends JFrame{
 	
 	private Border lineBorder = new LineBorder(Color.GRAY, 1);//全局边界线
 	/*Client构造函数*/
-	public Client(User u){
+	public Client(User u,ObjectOutputStream o,ObjectInputStream i){
 		user = u;
+		os = o;
+		is = i;
 		System.out.println(user.getName()+":"+user.getpswd());
 		String[] friendOnline = { "black", "blue", "green", "yellow", "white", "black", "blue", "green", "yellow", "white" };
 		
@@ -95,37 +109,48 @@ public class Client extends JFrame{
 		web.add(gold);
 		
 		meaning3.setLayout(new GridLayout(3,1,3,3));
-		text0.setFont(new Font("Serif", 0, 25));
-		text1.setFont(new Font("Serif", 0, 25));
-		text2.setFont(new Font("Serif", 0, 25));
+		text0.setFont(new Font("Serif", 0, 22));
+		text1.setFont(new Font("Serif", 0, 22));
+		text2.setFont(new Font("Serif", 0, 22));
 		text0.setLineWrap(true);
 		text1.setLineWrap(true);//自动换行
 		text2.setLineWrap(true);
+		m0.add(labelBaidu);
+		m0.add(text0);
+		m0.add(good0);
+		m1.add(labelYoudao);
+		m1.add(text1);
+		m1.add(good1);
+		m2.add(labelBing);
+		m2.add(text2);
+		m2.add(good2);
 		meaning3.add(web);
-		meaning3.add(text0);
-		meaning3.add(text1);
-		meaning3.add(text2);
+		meaning3.add(m0);
+		meaning3.add(m1);
+		meaning3.add(m2);
 		
 		meanAndCheck.setLayout(new BorderLayout());
 		meanAndCheck.add(web,BorderLayout.NORTH);
 		meanAndCheck.add(meaning3,BorderLayout.CENTER);
 		
 		/*分享面板*/
-		south.add(sharePanel,BorderLayout.CENTER);//
-		sharePanel.setBorder(lineBorder);
+		//south.add(sharePanel,BorderLayout.CENTER);//
+		//sharePanel.setBorder(lineBorder);
 		
 		/*设置背诵面板*/
 		//south.add(recitePanel);
-		recitePanel.setLayout(new GridLayout(6,1,10,20));
-		recitePanel.setBorder(lineBorder);
+		//recitePanel.setLayout(new GridLayout(6,1,10,20));
+		//recitePanel.setBorder(lineBorder);
 		//recitePanel.setSize(10, 700);
 			
         friendList = new JList<String>(friendOnline);//init list
 		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	
 		friendList.setFont(new Font("Arial", Font.PLAIN, 19));
-		listPanel = new JScrollPane(friendList);
+		if(user.getLogInfo()==false)
+		    listPanel = new JScrollPane(friendList);
 		listPanel.setPreferredSize(new Dimension(280,630));
 		south.add(listPanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加
+		
 		
 		this.setTitle("Online Dictionary");
 		this.setSize(1050, 830);
@@ -133,29 +158,13 @@ public class Client extends JFrame{
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
-		
-		/*建立socket接口*/
-		try
-		{
-			socket = new Socket("10.0.1.7", 8000);
-			is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-			os = new ObjectOutputStream(socket.getOutputStream());
-		}
-		catch(IOException ex)
-		{
-			text0.append(ex.toString() + "\n");
-		}
 	}
 	
 	class SearchListener implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
 			try
-			{
-				/*socket = new Socket("10.0.1.7", 8000);
-				os = new ObjectOutputStream(socket.getOutputStream());
-				is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));*/
-				
+			{			
 				TranslateInfo t = new TranslateInfo();
 				t.setType(0);
 				t.setWord(in.getText());
@@ -167,7 +176,7 @@ public class Client extends JFrame{
 				text0.setText(t.getMean0());
 				text1.setText(t.getMean1());
 				text2.setText(t.getMean2());
-				socket.close();
+				//socket.close();
 			}
 			catch(IOException ex)
 			{

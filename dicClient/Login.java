@@ -3,6 +3,11 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,6 +17,9 @@ import javax.swing.JTextArea;
 
 
 public class Login extends JFrame{
+	private Socket socket; 
+	private ObjectOutputStream os;
+    private ObjectInputStream is;  
 	private User user = new User();
 	private JLabel l1 = new JLabel("用户名");
 	private JLabel l2 = new JLabel("   密码 ");
@@ -25,6 +33,7 @@ public class Login extends JFrame{
 	private JButton y = new JButton("登陆");
 	private JButton q = new JButton("退出");
 	private JButton r = new JButton("注册");
+	private JButton travel = new JButton("游客登陆");
 	
 	public Login(){
 		l1.setFont(new Font("Serif", 0, 25));
@@ -34,6 +43,7 @@ public class Login extends JFrame{
 		y.setFont(new Font("Serif", 0, 20));
 		q.setFont(new Font("Serif", 0, 20));
 		r.setFont(new Font("Serif", 0, 20));
+		travel.setFont(new Font("Serif", 0, 20));
 		
 		p1.setLayout(new FlowLayout());
 		p2.setLayout(new FlowLayout());
@@ -45,22 +55,61 @@ public class Login extends JFrame{
 		p3.add(y);
 		p3.add(r);
 		p3.add(q);
+		p3.add(travel);
 		setLayout(new GridLayout(3,1,1,1));
 		add(p1);
 		add(p2);
 		add(p3);
+		
+		/*建立socket接口*/
+		try
+		{
+			socket = new Socket("172.28.7.156", 8000);
+			os = new ObjectOutputStream(socket.getOutputStream());
+		    is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+		}
+		catch(IOException ex)
+		{
+		    //text0.append(ex.toString() + "\n");
+		}
 		
 		y.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
 				String name = area1.getText();
 				String pswd = area2.getText();
-				if(true){
+				NameLogin temp = new NameLogin(1,name,pswd);
+				
+				try {
+					os.writeObject(temp);
+					os.flush();
+					temp = (NameLogin)is.readObject();
+
+				} catch (IOException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+				
+				if(temp.getConn()){
 					user.setName(name);
 					user.setpswd(pswd);
 					user.setLogInfo(true);
-					JFrame frame = new Client(user);
+					JFrame frame = new Client(user,os,is);
 				}	
+				Login.this.dispose();//隐藏登陆界面
+			}
+			
+		});
+		
+		travel.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO 自动生成的方法存根
+
+				user.setLogInfo(true);
+				JFrame frame = new Client(user,os,is);
 				Login.this.dispose();//隐藏登陆界面
 			}
 			
@@ -70,7 +119,7 @@ public class Login extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
 				Login.this.dispose();//隐藏登陆界面
-				JFrame frame = new Register();
+				JFrame frame = new Register(os,is);
 			}
 			
 		});
