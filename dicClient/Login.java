@@ -62,7 +62,7 @@ public class Login extends JFrame{
 		add(p3);
 		
 		/*建立socket接口*/
-		try
+		/*try
 		{
 			socket = new Socket("172.28.7.156", 8000);
 			os = new ObjectOutputStream(socket.getOutputStream());
@@ -72,18 +72,25 @@ public class Login extends JFrame{
 		{
 		    //text0.append(ex.toString() + "\n");
 		}
-		
+		*/
 		y.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
 				String name = area1.getText();
 				String pswd = area2.getText();
-				NameLogin temp = new NameLogin(1,name,pswd);
+				NameLogin temp = new NameLogin(name,pswd);
 				
 				try {
+					OrderType order = new OrderType(1);
+					os.writeObject(order);
+					os.flush();
+					order = (OrderType)is.readObject();
+					
+					if(order.getRecv()){
 					os.writeObject(temp);
 					os.flush();
 					temp = (NameLogin)is.readObject();
+					}
 
 				} catch (IOException e) {
 					// TODO 自动生成的 catch 块

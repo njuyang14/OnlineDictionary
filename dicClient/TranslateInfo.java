@@ -1,25 +1,19 @@
 import java.io.Serializable;
 
 public class TranslateInfo implements Serializable{
-	private int type;
 	private String word;
 	private String mean0;
 	private String mean1;
 	private String mean2;
+	private int[] goodNum;//按顺序存储百度有道必应的点赞数
 	
 	public TranslateInfo(){}
 	
 	public TranslateInfo(int t, String w, String m0, String m1, String m2){
-		type = t;
 		word = w;
 		mean0 = m0;
 		mean1 = m1;
 		mean2 = m2;
-	}
-
-	
-	public int getType(){
-		return type;
 	}
 	
 	public String getWord(){
@@ -38,8 +32,8 @@ public class TranslateInfo implements Serializable{
 		return mean2;
 	}
 	
-	public void setType(int t){
-		type = t;
+	public int[] getGoodNum(){
+		return goodNum;
 	}
 	
 	public void setWord(String w){
@@ -58,5 +52,7 @@ public class TranslateInfo implements Serializable{
 		mean2 = m2;
 	}
 
-	
+	public void setNum(int num,int pos){
+		goodNum[pos] = num;
+	}
 }

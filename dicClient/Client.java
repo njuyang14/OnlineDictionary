@@ -28,6 +28,7 @@ public class Client extends JFrame{
 	private JCheckBox baidu = new JCheckBox("百度");
 	private JCheckBox youdao = new JCheckBox("有道");
 	private JCheckBox gold = new JCheckBox("必应");
+	private boolean[] checkboxState = {false,false,false};//
 	
 	private JPanel south = new JPanel();//下方面板
 	
@@ -104,6 +105,9 @@ public class Client extends JFrame{
 		baidu.setFont(new Font("Serif", 0, 25));
 		youdao.setFont(new Font("Serif", 0, 25));
 		gold.setFont(new Font("Serif", 0, 25));
+		baidu.addItemListener(new myItemListener());//复选框添加监听
+		youdao.addItemListener(new myItemListener());
+		gold.addItemListener(new myItemListener());
 		web.add(baidu);
 		web.add(youdao);
 		web.add(gold);
@@ -164,19 +168,71 @@ public class Client extends JFrame{
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
 			try
-			{			
+			{	
+				OrderType order = new OrderType(0);
+				os.writeObject(order);
+				os.flush();
+				order = (OrderType)is.readObject();
+				
+				if(order.getRecv()){//判断服务器是否收到信息
 				TranslateInfo t = new TranslateInfo();
-				t.setType(0);
+				//t.setType(0);
 				t.setWord(in.getText());
 				
 				os.writeObject(t);
 				os.flush();
 				
 				t = (TranslateInfo)is.readObject();
-				text0.setText(t.getMean0());
-				text1.setText(t.getMean1());
-				text2.setText(t.getMean2());
+				/*初始时按照百度有道必应的顺序显示*/
+				int[] goodNum = t.getGoodNum();
+				/*接收结果按照返回的点赞数进行排序*/
+				GoodNum g0 = new GoodNum(goodNum[0],iconBaidu,t.getMean0()),
+						g1 = new GoodNum(goodNum[1],iconYoudao,t.getMean1()),
+						g2 = new GoodNum(goodNum[2],iconBing,t.getMean2());
+				if(g0.goodNum>g1.goodNum){
+					if(g1.goodNum>g2.goodNum){}
+					else{
+						if(g0.goodNum>g2.goodNum){
+						    GoodNum temp = g1;
+						    g1 = g2;
+						    g2 = temp;
+						}
+						else{
+							GoodNum temp = g0;
+						    g0 = g2;
+						    g2 = temp;
+						}
+					}
+				}
+				else{//g0 < g1
+					if(g1.goodNum<g2.goodNum){
+						GoodNum temp = g0;
+					    g0 = g2;
+					    g2 = temp;
+					}
+					else{//g1>g2
+						if(g0.goodNum>g2.goodNum){
+							GoodNum temp = g0;
+						    g0 = g1;
+						    g0 = temp;
+						}
+						else{//g1>g2>g0
+							GoodNum temp = g0;
+							g0 = g1;
+							g1 = g2;
+							g2 = temp;
+						}
+					}
+				}
+				text0.setText(g0.text);
+				text1.setText(g1.text);
+				text2.setText(g2.text);
+				labelBaidu = new JLabel(g0.icon);
+				labelYoudao = new JLabel(g1.icon);
+				labelBing = new JLabel(g2.icon);
+				//good0 = new JButton(g0.goodNum);
 				//socket.close();
+				}
 			}
 			catch(IOException ex)
 			{
@@ -187,5 +243,28 @@ public class Client extends JFrame{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	class GoodNum{
+		public int goodNum;
+		public ImageIcon icon;
+		public String text;
+		public GoodNum(int g,ImageIcon i,String t){
+			goodNum = g;
+			i = icon;
+			text = t;
+		}
+	}
+	
+	class myItemListener implements ItemListener{
+
+		public void itemStateChanged(ItemEvent arg0) {
+			// TODO 自动生成的方法存根
+			 Object source = arg0.getItemSelectable();
+			 if(source == baidu){checkboxState[0] = !checkboxState[0];}
+			 if(source == youdao){checkboxState[1] = !checkboxState[1];}
+			 if(source == gold){checkboxState[2] = !checkboxState[2];}
+		}
+		
 	}
 }

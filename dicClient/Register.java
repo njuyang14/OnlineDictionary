@@ -67,11 +67,18 @@ public class Register extends JFrame{
 				String pswd = area2.getText();
 				String ps = area3.getText();
 				if(pswd == ps){
-				NameLogin temp = new NameLogin(2,name,pswd);
+				NameLogin temp = new NameLogin(name,pswd);
 				try {
+					OrderType order = new OrderType(1);
+					os.writeObject(order);
+					os.flush();
+					order = (OrderType)is.readObject();
+					
+					if(order.getRecv()){
 					os.writeObject(temp);
 					os.flush();
 					temp = (NameLogin)is.readObject();
+					}
 
 				} catch (IOException e) {
 					// TODO 自动生成的 catch 块
