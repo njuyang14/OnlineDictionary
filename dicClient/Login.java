@@ -17,7 +17,6 @@ import javax.swing.JTextArea;
 
 
 public class Login extends JFrame{
-	private Socket socket; 
 	private ObjectOutputStream os;
     private ObjectInputStream is;  
 	private User user = new User();
@@ -35,7 +34,10 @@ public class Login extends JFrame{
 	private JButton r = new JButton("注册");
 	private JButton travel = new JButton("游客登陆");
 	
-	public Login(){
+	public Login(ObjectOutputStream o, ObjectInputStream i){
+
+		os = o;
+		is = i;
 		l1.setFont(new Font("Serif", 0, 25));
 		l2.setFont(new Font("Serif", 0, 25));
 		area1.setFont(new Font("Serif", 0, 25));
@@ -61,18 +63,8 @@ public class Login extends JFrame{
 		add(p2);
 		add(p3);
 		
-		/*建立socket接口*/
-		/*try
-		{
-			socket = new Socket("172.28.7.156", 8000);
-			os = new ObjectOutputStream(socket.getOutputStream());
-		    is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-		}
-		catch(IOException ex)
-		{
-		    //text0.append(ex.toString() + "\n");
-		}
-		*/
+		
+		
 		y.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根

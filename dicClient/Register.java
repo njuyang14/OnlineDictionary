@@ -33,6 +33,8 @@ public class Register extends JFrame{
 	private JButton q = new JButton("ÍË³ö");
 	
 	public Register(ObjectOutputStream o,ObjectInputStream i){
+		os = o;
+		is = i;
 		l1.setFont(new Font("Serif", 0, 25));
 		l2.setFont(new Font("Serif", 0, 25));
 		l3.setFont(new Font("Serif", 0, 25));
@@ -66,10 +68,10 @@ public class Register extends JFrame{
 				String name = area1.getText();
 				String pswd = area2.getText();
 				String ps = area3.getText();
-				if(pswd == ps){
+				if(pswd.equals(ps)){
 				NameLogin temp = new NameLogin(name,pswd);
 				try {
-					OrderType order = new OrderType(1);
+					OrderType order = new OrderType(4);
 					os.writeObject(order);
 					os.flush();
 					order = (OrderType)is.readObject();
@@ -93,7 +95,7 @@ public class Register extends JFrame{
 				}
 				
 				Register.this.dispose();//Òþ²ØµÇÂ½½çÃæ
-				JFrame frame = new Login();
+				JFrame frame = new Login(os, is);
 			}
 			
 		});

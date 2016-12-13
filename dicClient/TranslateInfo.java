@@ -5,7 +5,7 @@ public class TranslateInfo implements Serializable{
 	private String mean0;
 	private String mean1;
 	private String mean2;
-	private int[] goodNum;//按顺序存储百度有道必应的点赞数
+	private int[] goodNum = {0, 0, 0};//按顺序存储百度有道必应的点赞数
 	
 	public TranslateInfo(){}
 	
