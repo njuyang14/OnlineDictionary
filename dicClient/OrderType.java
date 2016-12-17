@@ -6,7 +6,10 @@ public class OrderType implements Serializable{
 	/*
 	 * 0 ·­Òë
 	 * 1µÇÂ½
+	 * 2µãÔŞ
+	 * 3·ÖÏí
 	 * 4×¢²á
+	 * 5ÍË³ö
 	 */
 	private boolean recv = false;
 	

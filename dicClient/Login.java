@@ -18,7 +18,7 @@ import javax.swing.JTextArea;
 
 public class Login extends JFrame{
 	private ObjectOutputStream os;
-    private ObjectInputStream is;  
+    private ObjectInputStream is;
 	private User user = new User();
 	private JLabel l1 = new JLabel("用户名");
 	private JLabel l2 = new JLabel("   密码 ");
@@ -96,6 +96,7 @@ public class Login extends JFrame{
 					user.setName(name);
 					user.setpswd(pswd);
 					user.setLogInfo(true);
+					user.setFriendList(temp.getFriendList());//获得好友列表
 					JFrame frame = new Client(user,os,is);
 				}	
 				Login.this.dispose();//隐藏登陆界面
@@ -107,7 +108,7 @@ public class Login extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
 
-				user.setLogInfo(true);
+				user.setLogInfo(false);
 				JFrame frame = new Client(user,os,is);
 				Login.this.dispose();//隐藏登陆界面
 			}

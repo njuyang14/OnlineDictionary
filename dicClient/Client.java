@@ -78,7 +78,7 @@ public class Client extends JFrame{
 		is = i;
 		System.out.println(user.getName()+":"+user.getpswd());
 		String[] friendOnline = { "black", "blue", "green", "yellow", "white", "black", "blue", "green", "yellow", "white" };
-		
+		//String[] friendOnline = user.getFriendList();
 		setLayout(new BorderLayout());//Frame Layout 
 		/*设置最上方输入以及用户登陆界面*/
 		add(pInput,BorderLayout.NORTH);
@@ -92,6 +92,7 @@ public class Client extends JFrame{
 		logout.setFont(new Font("Serif", 0, 23));
 		pInput.add(logout);
 		search.addActionListener(new SearchListener());
+		logout.addActionListener(new LogoutListener());
 		
 		/*下方面板*/
 		add(south,BorderLayout.CENTER);
@@ -148,7 +149,7 @@ public class Client extends JFrame{
         friendList = new JList<String>(friendOnline);//init list
 		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	
 		friendList.setFont(new Font("Arial", Font.PLAIN, 19));
-		if(user.getLogInfo()==false)
+		if(user.getLogInfo()==true)//
 		    listPanel = new JScrollPane(friendList);
 		listPanel.setPreferredSize(new Dimension(280,630));
 		south.add(listPanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加
@@ -184,6 +185,32 @@ public class Client extends JFrame{
 				}
 			} catch (IOException e) {
 				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class LogoutListener implements ActionListener{
+		public void actionPerformed(ActionEvent arg0) {
+			try
+			{
+				OrderType order = new OrderType(5);
+				os.writeObject(order);
+				os.flush();
+				order = (OrderType)is.readObject();
+				if(order.getRecv()){//判断服务器是否收到信息
+					NameLogin temp = new NameLogin(user.getName(), user.getpswd());//TODO:获取自身用户名
+					os.writeObject(temp);
+					os.flush();
+					temp = (NameLogin)is.readObject();
+				}
+			}
+			catch (IOException e)
+			{
+			// TODO 自动生成的 catch 块
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				// TODO 自动生成的 catch 块
@@ -242,6 +269,13 @@ public class Client extends JFrame{
 				labelYoudao.setIcon(array[1].icon);
 				labelBing.setIcon(array[2].icon);
 				afterGoodArray = array;
+				
+				if(user.getLogInfo()==true){
+					//user.setFriendList(new String[]{"q","w"});
+					String[] friendOnline = user.getFriendList();
+					friendList = new JList<String>(friendOnline);//init list
+					//listPanel = new JScrollPane(friendList);
+				}
 				}
 			}
 			catch(IOException ex)

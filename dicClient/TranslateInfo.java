@@ -6,6 +6,7 @@ public class TranslateInfo implements Serializable{
 	private String mean1;
 	private String mean2;
 	private int[] goodNum = {0, 0, 0};//按顺序存储百度有道必应的点赞数
+	private String[] friendOnline; 
 	
 	public TranslateInfo(){}
 	
@@ -54,5 +55,13 @@ public class TranslateInfo implements Serializable{
 
 	public void setNum(int num,int pos){
 		goodNum[pos] = num;
+	}
+	
+	public String[] getFriendList(){
+		return friendOnline;
+	}
+	
+	public void setFriendList(String[] str){
+		friendOnline = str;
 	}
 }
