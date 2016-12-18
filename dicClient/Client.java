@@ -56,7 +56,7 @@ public class Client extends JFrame{
 	private JPanel meanAndCheck = new JPanel();//选择平台和词意显示
 	
 	private JPanel sharePanel = new JPanel();
-	private JButton shareToFriend = new JButton();//分享
+	private JButton readMessage = new JButton("查看好友留言");//分享
 	
 	private JPanel recitePanel = new JPanel();//背单词面板
 	private JList reciteList = new JList();//单词本显示
@@ -77,7 +77,7 @@ public class Client extends JFrame{
 		os = o;
 		is = i;
 		System.out.println(user.getName()+":"+user.getpswd());
-		String[] friendOnline = { "black", "blue", "green", "yellow", "white", "black", "blue", "green", "yellow", "white" };
+		String[] friendOnline = {"Login to get other online user!"};
 		//String[] friendOnline = user.getFriendList();
 		setLayout(new BorderLayout());//Frame Layout 
 		/*设置最上方输入以及用户登陆界面*/
@@ -147,13 +147,29 @@ public class Client extends JFrame{
 		meanAndCheck.add(meaning3,BorderLayout.CENTER);
 			
         friendList = new JList<String>(friendOnline);//init list
-		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	
+		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//friendList.addListSelectionListener(new listSelectionListener());
 		friendList.setFont(new Font("Arial", Font.PLAIN, 19));
-		if(user.getLogInfo()==true)//
-		    listPanel = new JScrollPane(friendList);
-		listPanel.setPreferredSize(new Dimension(280,630));
-		south.add(listPanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加
+		if(user.getLogInfo()==true)friendList.setListData(user.getFriendList());
+		else
+			friendList.setListData(friendOnline);
+		listPanel = new JScrollPane(friendList);
+		listPanel.setPreferredSize(new Dimension(280,430));
+		sharePanel.setLayout(new BorderLayout());		
+		sharePanel.add(listPanel,BorderLayout.CENTER);
+		sharePanel.add(readMessage,BorderLayout.SOUTH);
+		readMessage.addActionListener(new MessageListener());
+		south.add(sharePanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加
 		
+		friendList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+                if(arg0.getClickCount() == 2){
+                	String toName = friendList.getSelectedValue();
+                	new SendMsg(user,os,is,toName);
+                }
+            }
+        });
 		
 		this.setTitle("Online Dictionary");
 		this.setSize(1050, 830);
@@ -182,6 +198,19 @@ public class Client extends JFrame{
 					goodType = new Integer(afterGoodArray[btn].type);
 					os.writeObject(goodType);
 					os.flush();
+					Integer[] num = (Integer[])is.readObject();
+					for(int i=0;i<3;i++){
+						int max=i;
+						for(int j=i;j<3;j++){
+							if(num[j]>num[max])max=j;
+						}
+						int temp = num[max];
+						num[max] = num[i];
+						num[i] = temp;
+					}
+					good0.setText(num[0].toString());
+					good1.setText(num[1].toString());
+					good2.setText(num[2].toString());
 				}
 			} catch (IOException e) {
 				// TODO 自动生成的 catch 块
@@ -216,6 +245,8 @@ public class Client extends JFrame{
 				// TODO 自动生成的 catch 块
 				e.printStackTrace();
 			}
+			Client.this.dispose();
+			new Login(os,is);
 		}
 	}
 	
@@ -224,6 +255,7 @@ public class Client extends JFrame{
 			// TODO 自动生成的方法存根
 			try
 			{	
+				
 				OrderType order = new OrderType(0);
 				os.writeObject(order);
 				os.flush();
@@ -272,9 +304,10 @@ public class Client extends JFrame{
 				
 				if(user.getLogInfo()==true){
 					//user.setFriendList(new String[]{"q","w"});
-					String[] friendOnline = user.getFriendList();
-					friendList = new JList<String>(friendOnline);//init list
+					//String[] friendOnline = user.getFriendList();
+					//friendList = new JList<String>(friendOnline);//init list
 					//listPanel = new JScrollPane(friendList);
+					friendList.setListData(user.getFriendList());
 				}
 				}
 			}
@@ -316,5 +349,12 @@ public class Client extends JFrame{
 			 if(source == gold){checkboxState[2] = !checkboxState[2];}
 		}
 		
+	}
+	
+	class MessageListener implements ActionListener{
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO 自动生成的方法存根
+			new ReadMsg(user,os,is);
+		}		
 	}
 }
