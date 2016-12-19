@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -14,13 +16,16 @@ public class Client extends JFrame{
     private ObjectInputStream is;  
 	private User user = new User();//
 	
+	private JPanel bkgp = new JPanel();
+	
 	private JPanel pInput = new JPanel();//最上方面板
 	//private JButton login = new JButton("login");
 	private JButton search = new JButton("search");
 	private JTextArea in = new JTextArea(1,28);
 	//private JButton changeMode = new JButton("中/英");
-	private String[] mode = {"汉译英","英译汉"};
-	private JComboBox changeMode = new JComboBox(mode);
+	//private String[] mode = {"汉译英","英译汉"};
+	//private JComboBox changeMode = new JComboBox(mode);
+	private JLabel myName = new JLabel();
 	//private JButton register = new JButton("register");
 	private JButton logout = new JButton("logout");
 	
@@ -37,13 +42,15 @@ public class Client extends JFrame{
 	private ImageIcon iconBaidu = new ImageIcon("./src/百度.png");
 	private ImageIcon iconYoudao = new ImageIcon("./src/有道.png");
 	private ImageIcon iconBing = new ImageIcon("./src/必应.png");
+	private ImageIcon heart = new ImageIcon("./src/heart.png");
+	private ImageIcon icon = new ImageIcon("./src/background.png");
 	private JLabel labelBaidu = new JLabel(iconBaidu);
 	private JLabel labelYoudao = new JLabel(iconYoudao);
 	private JLabel labelBing = new JLabel(iconBing);
 	/*点赞按钮*/
-	private JButton good0 = new JButton("赞");
-	private JButton good1 = new JButton("赞");
-	private JButton good2 = new JButton("赞");
+	private JButton good0 = new JButton();
+	private JButton good1 = new JButton();
+	private JButton good2 = new JButton();
 	private GoodNum g0,g1,g2;
 	private GoodNum afterGoodArray[];
 	private JPanel m0 = new JPanel();
@@ -58,19 +65,21 @@ public class Client extends JFrame{
 	private JPanel sharePanel = new JPanel();
 	private JButton readMessage = new JButton("查看好友留言");//分享
 	
-	private JPanel recitePanel = new JPanel();//背单词面板
+	/*private JPanel recitePanel = new JPanel();//背单词面板
 	private JList reciteList = new JList();//单词本显示
 	private JButton nextRecite = new JButton();//下一个单词
 	private JButton prevRecite = new JButton();//上一个单词
 	private JButton removeRecite = new JButton();//删除单词表中的单词
 	
-	private JPanel friendPanel = new JPanel();//好友面板
+	private JPanel friendPanel = new JPanel();//好友面板*/
 	private JList<String> friendList = new JList<String>();//好友显示
 	private JScrollPane listPanel = new JScrollPane(friendList);
 	
-	private JButton sendMsg = new JButton();//给好友发信息 
+	//private JButton sendMsg = new JButton();//给好友发信息 
 	
 	private Border lineBorder = new LineBorder(Color.GRAY, 1);//全局边界线
+	
+	private boolean canGood = false;
 	/*Client构造函数*/
 	public Client(User u,ObjectOutputStream o,ObjectInputStream i){
 		user = u;
@@ -79,30 +88,52 @@ public class Client extends JFrame{
 		System.out.println(user.getName()+":"+user.getpswd());
 		String[] friendOnline = {"Login to get other online user!"};
 		//String[] friendOnline = user.getFriendList();
+		
 		setLayout(new BorderLayout());//Frame Layout 
+		/*设置背景图片，将frame转换成panel，加入图片后，再在frame上覆盖面板以达成背景图片设置的目的*/
+		JLabel backImage = new JLabel(icon);
+		backImage.setBounds(0, 0, icon.getIconWidth(),icon.getIconHeight());//设置图片大小
+		((JPanel)this.getContentPane()).setOpaque(false);//获取frame的面板，将其转换成JPanel
+		this.getLayeredPane().setLayout(null);//设置无布局方式
+		this.getLayeredPane().add(backImage, new Integer(Integer.MIN_VALUE));//加入图片
+		
+		/*在背景frame上添加第一层面板*/
+		Container c = getContentPane(); //获取JFrame面板
+		c.add(bkgp,BorderLayout.CENTER);
+		bkgp.setOpaque(false);//设置bkgp为透明，
+		//bkgp.add(p3);
+		
 		/*设置最上方输入以及用户登陆界面*/
-		add(pInput,BorderLayout.NORTH);
+		bkgp.add(pInput,BorderLayout.NORTH);//............
+		pInput.setOpaque(false);
+		pInput.add(myName);
 		pInput.setLayout(new FlowLayout());
 		pInput.add(search);
 		search.setFont(new Font("Serif", 0, 23));
 		pInput.add(in);
 		in.setFont(new Font("Serif", 0, 23));
-		changeMode.setFont(new Font("Serif", 0, 23));
-		pInput.add(changeMode);
+		myName.setFont(new Font("Serif", 0, 23));
+		if(user.getLogInfo())myName.setText("当前："+user.getName()+" ");
+		else
+			myName.setText("当前："+"游客"+" ");
 		logout.setFont(new Font("Serif", 0, 23));
 		pInput.add(logout);
 		search.addActionListener(new SearchListener());
 		logout.addActionListener(new LogoutListener());
 		
 		/*下方面板*/
-		add(south,BorderLayout.CENTER);
+		bkgp.add(south,BorderLayout.CENTER);//..........
 		south.setLayout(new BorderLayout());
 		south.setBorder(lineBorder);
+		meanAndCheck.setOpaque(false);
 		
 		/*设置单词解释面板*/
 		south.add(meanAndCheck,BorderLayout.WEST);//    
+		south.setOpaque(false);
+		
 		
 		/*词典选择*/
+		web.setOpaque(false);
 		web.setLayout(new GridLayout(1,3,1,1));
 		//baidu.setSize(100,100);
 		baidu.setFont(new Font("Serif", 0, 25));
@@ -111,6 +142,9 @@ public class Client extends JFrame{
 		baidu.addItemListener(new myItemListener());//复选框添加监听
 		youdao.addItemListener(new myItemListener());
 		gold.addItemListener(new myItemListener());
+		baidu.setOpaque(false);
+		youdao.setOpaque(false);
+		gold.setOpaque(false);
 		web.add(baidu);
 		web.add(youdao);
 		web.add(gold);
@@ -131,9 +165,24 @@ public class Client extends JFrame{
 		m2.add(labelBing);
 		m2.add(text2);
 		m2.add(good2);
-		good0.setBorderPainted(false);
-		good1.setBorderPainted(false);
-		good2.setBorderPainted(false);
+		m0.setOpaque(false);
+		m1.setOpaque(false);
+		m2.setOpaque(false);
+		text0.setOpaque(false);
+		text1.setOpaque(false);
+		text2.setOpaque(false);
+		text0.setBorder(lineBorder);
+		text1.setBorder(lineBorder);
+		text2.setBorder(lineBorder);
+		good0.setBorderPainted(true);
+		good1.setBorderPainted(true);
+		good2.setBorderPainted(true);
+		good0.setIcon(heart);
+		good1.setIcon(heart);
+		good2.setIcon(heart);
+		good0.setOpaque(false);
+		good1.setOpaque(false);
+		good2.setOpaque(false);
 		good0.addActionListener(new GoodListener(0));
 		good1.addActionListener(new GoodListener(1));
 		good2.addActionListener(new GoodListener(2));
@@ -141,6 +190,7 @@ public class Client extends JFrame{
 		meaning3.add(m0);
 		meaning3.add(m1);
 		meaning3.add(m2);
+		meaning3.setOpaque(false);
 		
 		meanAndCheck.setLayout(new BorderLayout());
 		meanAndCheck.add(web,BorderLayout.NORTH);
@@ -149,18 +199,24 @@ public class Client extends JFrame{
         friendList = new JList<String>(friendOnline);//init list
 		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		//friendList.addListSelectionListener(new listSelectionListener());
-		friendList.setFont(new Font("Arial", Font.PLAIN, 19));
+		friendList.setFont(new Font("Arial", Font.PLAIN, 25));
+		
 		if(user.getLogInfo()==true)friendList.setListData(user.getFriendList());
 		else
 			friendList.setListData(friendOnline);
 		listPanel = new JScrollPane(friendList);
-		listPanel.setPreferredSize(new Dimension(280,430));
+		listPanel.setPreferredSize(new Dimension(280,650));
 		sharePanel.setLayout(new BorderLayout());		
 		sharePanel.add(listPanel,BorderLayout.CENTER);
 		sharePanel.add(readMessage,BorderLayout.SOUTH);
+		readMessage.setFont(new Font("宋体", Font.PLAIN, 22));
 		readMessage.addActionListener(new MessageListener());
-		south.add(sharePanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加
-		
+		sharePanel.setOpaque(false);
+		listPanel.setOpaque(false);
+		listPanel.getViewport().setOpaque(false);
+		friendList.setOpaque(false);
+		((JLabel)friendList.getCellRenderer()).setOpaque(false);
+		south.add(sharePanel,BorderLayout.EAST);//!!!!!!!! ScrollPane必须设置好再添加		
 		friendList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent arg0) {
@@ -187,6 +243,7 @@ public class Client extends JFrame{
 		}
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
+			if(canGood){
 			OrderType order = new OrderType(2);
 			try {
 				os.writeObject(order);
@@ -219,11 +276,13 @@ public class Client extends JFrame{
 				// TODO 自动生成的 catch 块
 				e.printStackTrace();
 			}
+			}
 		}
 	}
 	
 	class LogoutListener implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
+			if(user.getLogInfo()){
 			try
 			{
 				OrderType order = new OrderType(5);
@@ -245,14 +304,18 @@ public class Client extends JFrame{
 				// TODO 自动生成的 catch 块
 				e.printStackTrace();
 			}
-			Client.this.dispose();
-			new Login(os,is);
+			}		
+			//Client.this.dispose();
+			//new Login(os,is);
 		}
 	}
 	
 	class SearchListener implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
+			Pattern p = Pattern.compile("[a-zA-Z ]+");
+			Matcher m = p.matcher(in.getText());
+			if(m.matches()){
 			try
 			{	
 				
@@ -303,11 +366,8 @@ public class Client extends JFrame{
 				afterGoodArray = array;
 				
 				if(user.getLogInfo()==true){
-					//user.setFriendList(new String[]{"q","w"});
-					//String[] friendOnline = user.getFriendList();
-					//friendList = new JList<String>(friendOnline);//init list
-					//listPanel = new JScrollPane(friendList);
 					friendList.setListData(user.getFriendList());
+					canGood = true;
 				}
 				}
 			}
@@ -318,6 +378,10 @@ public class Client extends JFrame{
 			catch (ClassNotFoundException e) {
 				// TODO 自动生成的 catch 块
 				e.printStackTrace();
+			}
+			}
+			else{
+				in.setText("请重新输入！");
 			}
 		}
 	}
@@ -354,7 +418,9 @@ public class Client extends JFrame{
 	class MessageListener implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO 自动生成的方法存根
-			new ReadMsg(user,os,is);
+			if(user.getLogInfo()){
+			    new ReadMsg(user,os,is);
+			}
 		}		
 	}
 }

@@ -291,7 +291,6 @@ public class Server {
 							}
 							case 6://查看消息
 							{
-								//收一个无用
 								String uname = (String)inputOFromClient.readObject();//from client
 								String card = "";
 								ResultSet m = statement.executeQuery("select * from share where t='"+uname+"'");
@@ -325,6 +324,11 @@ public class Server {
 			catch(IOException ei)
 			{
 				System.err.println(ei);
+				try {
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			finally
 			{

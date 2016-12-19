@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
 
@@ -26,7 +27,8 @@ public class Login extends JFrame{
 	private JPanel p2 = new JPanel();
 	private JPanel p3 = new JPanel();
 	private JTextArea area1 = new JTextArea(1,10);
-	private JTextArea area2 = new JTextArea(1,10);
+	//private JTextArea area2 = new JTextArea(1,10);
+	private JPasswordField area2 = new JPasswordField(10);
 	//private JTextArea area3 = new JTextArea(1,28);
 	
 	private JButton y = new JButton("µÇÂ½");
@@ -41,6 +43,7 @@ public class Login extends JFrame{
 		l1.setFont(new Font("Serif", 0, 25));
 		l2.setFont(new Font("Serif", 0, 25));
 		area1.setFont(new Font("Serif", 0, 25));
+		//area1.setBorder();
 		area2.setFont(new Font("Serif", 0, 25));
 		y.setFont(new Font("Serif", 0, 20));
 		q.setFont(new Font("Serif", 0, 20));

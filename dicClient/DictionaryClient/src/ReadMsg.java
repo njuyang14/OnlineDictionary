@@ -22,6 +22,7 @@ public class ReadMsg extends JFrame{
 	
 	public ReadMsg(User u, ObjectOutputStream os, ObjectInputStream is){
 		p = new JScrollPane(text);
+		text.setFont(new Font("Serif", 0, 22));
 		text.setLineWrap(true);
 		text.setFont(new Font("Serif", 0, 22));
 		psend.add(send);

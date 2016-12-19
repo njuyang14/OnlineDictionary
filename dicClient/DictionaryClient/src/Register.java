@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
 
@@ -26,8 +27,8 @@ public class Register extends JFrame{
 	private JPanel p4 = new JPanel();
 	private JPanel p3 = new JPanel();
 	private JTextArea area1 = new JTextArea(1,10);
-	private JTextArea area2 = new JTextArea(1,10);
-	private JTextArea area3 = new JTextArea(1,10);
+	private JPasswordField area2 = new JPasswordField(10);
+	private JPasswordField area3 = new JPasswordField(10);
 	
 	private JButton y = new JButton("×¢²á");
 	private JButton q = new JButton("ÍË³ö");

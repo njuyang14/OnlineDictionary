@@ -73,13 +73,13 @@ public class SearchOnline {
 	    
 	    TransApi api = new TransApi(APP_ID, SECURITY_KEY);
         String tmp=api.getTransResult(word, "en", "zh");
-        //TODO:提取出汉字的unicode码后将utf-8转换成汉字
+        //提取出汉字的unicode码后将utf-8转换成汉字
         String result = utfToChar(tmp);
         
 		return result;
 	}
 	
-	public static String youdaoTran(String word)
+	public static String youdaoTran(String word)//http://blog.csdn.net/nomasp/article/details/48995039
 	{
 		String result = new String();
 	    try
@@ -130,7 +130,7 @@ public class SearchOnline {
             e.printStackTrace();
         }
 		
-	    //TODO:从返回值中提取出汉字内容存入result中
+	    //从返回值中提取出汉字内容存入result中
 	    result = handleChar(result);
 		return result;
 	}

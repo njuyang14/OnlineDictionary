@@ -16,7 +16,7 @@ public class Main {
 		/*建立socket接口*/
 		try
 		{
-			socket = new Socket("192.168.1.29", 7900);
+			socket = new Socket("192.168.43.197", 7900);
 			os = new ObjectOutputStream(socket.getOutputStream());
 		    is = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 		}
@@ -25,5 +25,5 @@ public class Main {
 			ex.printStackTrace();
 		}
 		new Login(os, is);
-	} 
+	}
 }
